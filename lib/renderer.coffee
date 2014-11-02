@@ -18,6 +18,11 @@ exports.toHtml = (text='', filePath, grammar, callback) ->
   # https://github.com/chjj/marked/issues/354
   text = text.replace(/^\s*<!doctype(\s+.*)?>\s*/i, '')
 
+  # Replace latex blocks with MathJax script delimited blocks. See
+  # docs.mathjax.org/en/latest/model.html for more info on MathJax preprocessor
+  regex = /^\s*?\n\$\$\n((?:[^\n]*\n+)*?)^\$\$(?=\n)/gm;
+  text = text.replace(regex, "\n<script type=\"math/tex; mode=display\">\n$1</script>");
+
   roaster text, options, (error, html) =>
     return callback(error) if error
 
@@ -40,7 +45,8 @@ exports.toText = (text, filePath, grammar, callback) ->
 
 sanitize = (html) ->
   o = cheerio.load("<div>#{html}</div>")
-  o('script').remove()
+  # Do not remove MathJax script delimited blocks
+  o("script[type!='math/tex; mode=display']").remove()
   attributesToRemove = [
     'onabort'
     'onblur'
