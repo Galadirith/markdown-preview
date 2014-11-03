@@ -5,6 +5,7 @@ Highlights = require 'highlights'
 {$} = require 'atom'
 roaster = null # Defer until used
 {scopeForFenceName} = require './extension-helper'
+mathjaxHelper = require './mathjax-helper'
 
 highlighter = null
 
@@ -18,10 +19,9 @@ exports.toHtml = (text='', filePath, grammar, callback) ->
   # https://github.com/chjj/marked/issues/354
   text = text.replace(/^\s*<!doctype(\s+.*)?>\s*/i, '')
 
-  # Replace latex blocks with MathJax script delimited blocks. See
-  # docs.mathjax.org/en/latest/model.html for more info on MathJax preprocessor
-  regex = /^\s*?\n\$\$\n((?:[^\n]*\n+)*?)^\$\$(?=\n)/gm;
-  text = text.replace(regex, "\n<script type=\"math/tex; mode=display\">\n$1</script>");
+  # Parse test for latex equations
+  if atom.config.get('markdown-preview.renderLaTex')
+    text = mathjaxHelper.parseMarkdownLatex(text)
 
   roaster text, options, (error, html) =>
     return callback(error) if error
@@ -46,7 +46,7 @@ exports.toText = (text, filePath, grammar, callback) ->
 sanitize = (html) ->
   o = cheerio.load("<div>#{html}</div>")
   # Do not remove MathJax script delimited blocks
-  o("script[type!='math/tex; mode=display']").remove()
+  o("script:not([type^='math/tex'])").remove()
   attributesToRemove = [
     'onabort'
     'onblur'

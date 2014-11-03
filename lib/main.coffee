@@ -19,8 +19,6 @@ deserializer =
     createMarkdownPreviewView(state) if state.constructor is Object
 atom.deserializers.add(deserializer)
 
-MathJaxHelper = require './mathjax-helper'
-
 module.exports =
   configDefaults:
     breakOnSingleNewline: false
@@ -47,7 +45,7 @@ module.exports =
       atom.config.toggle('markdown-preview.breakOnSingleNewline')
 
     # Call to load MathJax environment
-    MathJaxHelper()
+    require('./mathjax-helper').loadMathJax();
 
     atom.workspace.registerOpener (uriToOpen) ->
       try
