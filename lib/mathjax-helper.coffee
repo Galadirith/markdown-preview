@@ -17,9 +17,12 @@ exports.loadMathJax = ->
   document.getElementsByTagName("head")[0].appendChild(script)
   return
 
-exports.parseMarkdownLatex = (text) ->
+exports.preprocessor = (text) ->
   # Replace latex blocks with MathJax script delimited blocks. See
   # docs.mathjax.org/en/latest/model.html for more info on MathJax preprocessor
+
+  if !atom.config.get('markdown-preview.renderLaTex')
+    return text
 
   # Parse displayed equations
   regex       = /^\s*?\n\$\$\n((?:[^\n]*\n+)*?)^\$\$(?=\n)/gm

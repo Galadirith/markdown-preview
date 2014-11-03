@@ -20,8 +20,7 @@ exports.toHtml = (text='', filePath, grammar, callback) ->
   text = text.replace(/^\s*<!doctype(\s+.*)?>\s*/i, '')
 
   # Parse test for latex equations
-  if atom.config.get('markdown-preview.renderLaTex')
-    text = mathjaxHelper.parseMarkdownLatex(text)
+  text = mathjaxHelper.preprocessor(text)
 
   roaster text, options, (error, html) =>
     return callback(error) if error
