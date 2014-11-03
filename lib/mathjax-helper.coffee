@@ -37,13 +37,14 @@ exports.parseMarkdownLatex = (text) ->
 
 configureMathJax = ->
   MathJax.Hub.Config
-    # Similar to TeX-AMS_HTML without the 'tex2jax.js' extension. This kills
-    # the MathJax preprocessor
+    # Similar to TeX-AMS_HTML without any extension. This kills the MathJax
+    # preprocessor and the MathMenu and MathZoom features
     jax: ["input/TeX","output/HTML-CSS"]
-    extensions: ["MathMenu.js","MathZoom.js"]
+    extensions: []
     TeX:
       extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
     messageStyle: "none"
+    showMathMenu: false
   MathJax.Hub.Configured()
   return
 
