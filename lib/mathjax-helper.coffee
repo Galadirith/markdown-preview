@@ -9,6 +9,12 @@
 cheerio = require 'cheerio'
 
 module.exports =
+  # Each preview tab is an instance of markdown-preview-view, which containts
+  # once instance of renderer, which contains one instance of mathjax-helper
+  # so we can toggle LaTex rendering on a per view basis
+  previousRenderLaTex: false
+  renderLaTex: false
+
   loadMathJax: ->
     # Load MathJax
     script        = document.createElement("script")
@@ -18,13 +24,14 @@ module.exports =
     script.type   = "text/javascript";
     script.src    = process.env['HOME']+"/.atom/MathJax/MathJax.js?delayStartupUntil=configured"
     document.getElementsByTagName("head")[0].appendChild(script)
+    @previousRenderLaTex = atom.config.get('markdown-preview.renderLaTex')
     return
 
   preprocessor: (text) ->
     # Replace latex blocks with MathJax script delimited blocks. See
     # docs.mathjax.org/en/latest/model.html for more info on MathJax preprocessor
 
-    if !atom.config.get('markdown-preview.renderLaTex')
+    if !@queryRenderLaTex()
       return text
 
     # Parse displayed equations
@@ -42,7 +49,7 @@ module.exports =
     return parsedText
 
   postprocessor: (html) ->
-    if !atom.config.get('markdown-preview.renderLaTex')
+    if !@queryRenderLaTex()
       return html
 
     o = cheerio.load(html)
@@ -56,6 +63,15 @@ module.exports =
           when '</code>'  then ''
           else ''
     o.html()
+
+  queryRenderLaTex: ->
+    currentRenderLaTex = atom.config.get('markdown-preview.renderLaTex')
+    if currentRenderLaTex is @previousRenderLaTex
+      return @renderLaTex
+    else
+      @previousRenderLaTex = currentRenderLaTex
+      @renderLaTex = !@renderLaTex
+      return @renderLaTex
 
 configureMathJax = ->
   MathJax.Hub.Config

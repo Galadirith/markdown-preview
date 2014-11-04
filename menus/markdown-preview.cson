@@ -7,7 +7,7 @@
         'label': 'Toggle Preview'
         'command': 'markdown-preview:toggle'
       },{
-        'label': 'Toggle LaTex'
+        'label': 'Toggle LaTex in Active Preview'
         'command': 'markdown-preview:toggle-render-latex'
       }
     ]
