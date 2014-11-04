@@ -8,53 +8,54 @@
 
 cheerio = require 'cheerio'
 
-exports.loadMathJax = ->
-  # Load MathJax
-  script        = document.createElement("script")
-  script.addEventListener "load", () ->
-    configureMathJax()
-    enableMathjaxPreview()
-  script.type   = "text/javascript";
-  script.src    = process.env['HOME']+"/.atom/MathJax/MathJax.js?delayStartupUntil=configured"
-  document.getElementsByTagName("head")[0].appendChild(script)
-  return
+module.exports =
+  loadMathJax: ->
+    # Load MathJax
+    script        = document.createElement("script")
+    script.addEventListener "load", () ->
+      configureMathJax()
+      enableMathjaxPreview()
+    script.type   = "text/javascript";
+    script.src    = process.env['HOME']+"/.atom/MathJax/MathJax.js?delayStartupUntil=configured"
+    document.getElementsByTagName("head")[0].appendChild(script)
+    return
 
-exports.preprocessor = (text) ->
-  # Replace latex blocks with MathJax script delimited blocks. See
-  # docs.mathjax.org/en/latest/model.html for more info on MathJax preprocessor
+  preprocessor: (text) ->
+    # Replace latex blocks with MathJax script delimited blocks. See
+    # docs.mathjax.org/en/latest/model.html for more info on MathJax preprocessor
 
-  if !atom.config.get('markdown-preview.renderLaTex')
-    return text
+    if !atom.config.get('markdown-preview.renderLaTex')
+      return text
 
-  # Parse displayed equations
-  regex       = /^[^\S\n]*\n\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n[^\S\n]*$)/gm
-  parsedText  = text.replace(regex, "\n<script type=\"math/tex; mode=display\">\n$1</script>")
+    # Parse displayed equations
+    regex       = /^[^\S\n]*\n\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n[^\S\n]*$)/gm
+    parsedText  = text.replace(regex, "\n<script type=\"math/tex; mode=display\">\n$1</script>")
 
-  # Parse inline equations
-  regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
-  parsedText = parsedText.replace( regex, "$1<script type=\"math/tex\">`$2$3`</script>")
+    # Parse inline equations
+    regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
+    parsedText = parsedText.replace( regex, "$1<script type=\"math/tex\">`$2$3`</script>")
 
-  # Parse escaped $
-  regex = /[\\]\$/gm
-  parsedText = parsedText.replace( regex, "$")
+    # Parse escaped $
+    regex = /[\\]\$/gm
+    parsedText = parsedText.replace( regex, "$")
 
-  return parsedText
+    return parsedText
 
-exports.postprocessor = (html) ->
-  if !atom.config.get('markdown-preview.renderLaTex')
-    return html
+  postprocessor: (html) ->
+    if !atom.config.get('markdown-preview.renderLaTex')
+      return html
 
-  o = cheerio.load(html)
-  regex = /(?:<code>|<\/code>)/gm
-  o("script[type='math/tex']").contents().replaceWith () ->
-    # The .text decodes the HTML entities for &,<,> as in code blocks the
-    # are automatically converted into HTML entities
-    o(this).text().replace regex, (match) ->
-      switch match
-        when '<code>'   then ''
-        when '</code>'  then ''
-        else ''
-  o.html()
+    o = cheerio.load(html)
+    regex = /(?:<code>|<\/code>)/gm
+    o("script[type='math/tex']").contents().replaceWith () ->
+      # The .text decodes the HTML entities for &,<,> as in code blocks the
+      # are automatically converted into HTML entities
+      o(this).text().replace regex, (match) ->
+        switch match
+          when '<code>'   then ''
+          when '</code>'  then ''
+          else ''
+    o.html()
 
 configureMathJax = ->
   MathJax.Hub.Config
