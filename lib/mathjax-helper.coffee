@@ -27,7 +27,7 @@ exports.preprocessor = (text) ->
     return text
 
   # Parse displayed equations
-  regex       = /^\s*?\n\$\$\n((?:[^\n]*\n+)*?)^\$\$(?=\n)/gm
+  regex       = /^[^\S\n]*\n\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n[^\S\n]*$)/gm
   parsedText  = text.replace(regex, "\n<script type=\"math/tex; mode=display\">\n$1</script>")
 
   # Parse inline equations
