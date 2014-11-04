@@ -1,5 +1,6 @@
 '.workspace, .workspace .editor':
   'ctrl-M': 'markdown-preview:toggle'
+  'ctrl-X': 'markdown-preview:toggle-render-latex'
 
 '.platform-darwin .markdown-preview':
   'cmd-+': 'markdown-preview:zoom-in'
@@ -14,4 +15,3 @@
   'ctrl--': 'markdown-preview:zoom-out'
   'ctrl-_': 'markdown-preview:zoom-out'
   'ctrl-0': 'markdown-preview:reset-zoom'
-  'ctrl-X': 'markdown-preview:toggle-render-latex'
