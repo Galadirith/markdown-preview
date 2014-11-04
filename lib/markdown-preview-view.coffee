@@ -104,14 +104,18 @@ class MarkdownPreviewView extends ScrollView
       @subscribe @editor.getBuffer(), 'reloaded saved', =>
         changeHandler() unless atom.config.get 'markdown-preview.liveUpdate'
 
-    @subscribe atom.config.observe 'markdown-preview.toggleRenderLaTex', callNow: false, (state) =>
-      if (state is true) and (atom.workspaceView.getActiveView() is @)
+    @subscribe atom.config.observe 'markdown-preview.toggleRenderLaTex', callNow: false, () =>
+      if atom.workspaceView.getActiveView() is @
+        @renderLaTex = !@renderLaTex
         @renderMarkdown()
       return
 
     @subscribe atom.config.observe 'markdown-preview.breakOnSingleNewline', callNow: false, changeHandler
 
+  renderLaTex: false
+
   renderMarkdown: ->
+    atom.config.set('markdown-preview.renderLaTex', @renderLaTex)
     @showLoading()
     if @file?
       @file.read().then (contents) => @renderMarkdownText(contents)

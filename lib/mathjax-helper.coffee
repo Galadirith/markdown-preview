@@ -9,11 +9,6 @@
 cheerio = require 'cheerio'
 
 module.exports =
-  # Each preview tab is an instance of markdown-preview-view, which containts
-  # once instance of renderer, which contains one instance of mathjax-helper
-  # so we can toggle LaTex rendering on a per view basis
-  renderLaTex: false
-
   loadMathJax: ->
     # Load MathJax
     script        = document.createElement("script")
@@ -23,7 +18,6 @@ module.exports =
     script.type   = "text/javascript";
     script.src    = process.env['HOME']+"/.atom/MathJax/MathJax.js?delayStartupUntil=configured"
     document.getElementsByTagName("head")[0].appendChild(script)
-    atom.config.set('markdown-preview.toggleRenderLaTex', false)
     return
 
   preprocessor: (text) ->
@@ -64,14 +58,7 @@ module.exports =
     o.html()
 
   queryRenderLaTex: ->
-    if atom.config.get('markdown-preview.toggleRenderLaTex')
-      @renderLaTex = !@renderLaTex
-      @count++
-      console.log(@count)
-      atom.config.set('markdown-preview.toggleRenderLaTex', false)
-    return @renderLaTex
-
-  count: 0
+    atom.config.get('markdown-preview.renderLaTex')
 
 configureMathJax = ->
   MathJax.Hub.Config
