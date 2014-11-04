@@ -6,6 +6,8 @@
 # latex display equations can be rendered.
 #
 
+cheerio = require 'cheerio'
+
 exports.loadMathJax = ->
   # Load MathJax
   script        = document.createElement("script")
@@ -30,13 +32,29 @@ exports.preprocessor = (text) ->
 
   # Parse inline equations
   regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
-  parsedText = parsedText.replace( regex, "$1<script type=\"math/tex\">$2$3</script>")
+  parsedText = parsedText.replace( regex, "$1<script type=\"math/tex\">`$2$3`</script>")
 
   # Parse escaped $
   regex = /[\\]\$/gm
   parsedText = parsedText.replace( regex, "$")
 
   return parsedText
+
+exports.postprocessor = (html) ->
+  if !atom.config.get('markdown-preview.renderLaTex')
+    return html
+
+  o = cheerio.load(html)
+  regex = /(?:<code>|<\/code>)/gm
+  o("script[type='math/tex']").contents().replaceWith () ->
+    # The .text decodes the HTML entities for &,<,> as in code blocks the
+    # are automatically converted into HTML entities
+    o(this).text().replace regex, (match) ->
+      switch match
+        when '<code>'   then ''
+        when '</code>'  then ''
+        else ''
+  o.html()
 
 configureMathJax = ->
   MathJax.Hub.Config
