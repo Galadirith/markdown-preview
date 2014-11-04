@@ -14,3 +14,4 @@
   'ctrl--': 'markdown-preview:zoom-out'
   'ctrl-_': 'markdown-preview:zoom-out'
   'ctrl-0': 'markdown-preview:reset-zoom'
+  'ctrl-X': 'markdown-preview:toggle-render-latex'
