@@ -12,7 +12,6 @@ module.exports =
   # Each preview tab is an instance of markdown-preview-view, which containts
   # once instance of renderer, which contains one instance of mathjax-helper
   # so we can toggle LaTex rendering on a per view basis
-  previousRenderLaTex: false
   renderLaTex: false
 
   loadMathJax: ->
@@ -24,7 +23,7 @@ module.exports =
     script.type   = "text/javascript";
     script.src    = process.env['HOME']+"/.atom/MathJax/MathJax.js?delayStartupUntil=configured"
     document.getElementsByTagName("head")[0].appendChild(script)
-    @previousRenderLaTex = atom.config.get('markdown-preview.renderLaTex')
+    atom.config.set('markdown-preview.toggleRenderLaTex', false)
     return
 
   preprocessor: (text) ->
@@ -65,13 +64,14 @@ module.exports =
     o.html()
 
   queryRenderLaTex: ->
-    currentRenderLaTex = atom.config.get('markdown-preview.renderLaTex')
-    if currentRenderLaTex is @previousRenderLaTex
-      return @renderLaTex
-    else
-      @previousRenderLaTex = currentRenderLaTex
+    if atom.config.get('markdown-preview.toggleRenderLaTex')
       @renderLaTex = !@renderLaTex
-      return @renderLaTex
+      @count++
+      console.log(@count)
+      atom.config.set('markdown-preview.toggleRenderLaTex', false)
+    return @renderLaTex
+
+  count: 0
 
 configureMathJax = ->
   MathJax.Hub.Config

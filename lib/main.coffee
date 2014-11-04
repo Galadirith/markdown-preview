@@ -30,7 +30,7 @@ module.exports =
       'text.plain'
       'text.plain.null-grammar'
     ]
-    renderLaTex: false
+    toggleRenderLaTex: false
 
   activate: ->
     atom.workspaceView.command 'markdown-preview:toggle', =>
@@ -46,7 +46,7 @@ module.exports =
       atom.config.toggle('markdown-preview.breakOnSingleNewline')
 
     atom.workspaceView.command 'markdown-preview:toggle-render-latex', ->
-      atom.config.toggle('markdown-preview.renderLaTex')
+      atom.config.toggle('markdown-preview.toggleRenderLaTex')
 
     # Call to load MathJax environment
     require('./mathjax-helper').loadMathJax();
