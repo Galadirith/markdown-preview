@@ -18,6 +18,11 @@ module.exports =
     script.type   = "text/javascript";
     script.src    = process.env['HOME']+"/.atom/MathJax/MathJax.js?delayStartupUntil=configured"
     document.getElementsByTagName("head")[0].appendChild(script)
+
+    div               = document.createElement("div")
+    div.id            = "mathWhiteboard"
+    div.setAttribute("style", "visibility: hidden; width: 100%; height: 100%; position: absolute; overflow: scroll;") 
+    document.getElementsByTagName("body")[0].appendChild(div)
     return
 
   preprocessor: (text) ->

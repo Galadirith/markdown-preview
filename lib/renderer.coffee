@@ -33,8 +33,11 @@ exports.toHtml = (text='', filePath, grammar, callback) ->
     html = sanitize(html)
     html = resolveImagePaths(html, filePath)
     html = tokenizeCodeBlocks(html, defaultCodeLanguage)
+    $('#mathWhiteboard').html(html)
+    MathJax.Hub.Queue ["Typeset", MathJax.Hub, document.getElementById('mathWhiteboard'), ->
+      callback(null, $('#mathWhiteboard').html().trim())]
     # I get error if I place mathjaxHelper.post here ???
-    callback(null, html.html().trim())
+
 
 exports.toText = (text, filePath, grammar, callback) ->
   exports.toHtml text, filePath, grammar, (error, html) ->

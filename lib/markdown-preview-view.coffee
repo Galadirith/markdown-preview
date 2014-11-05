@@ -128,7 +128,8 @@ class MarkdownPreviewView extends ScrollView
         @showError(error)
       else
         @loading = false
-        @html(html)
+        @html(html) # This is the line were the proceesed html is added to the
+                    # page's DOM, == this.html(html) ie $(<select this element>).html(html)
         @trigger('markdown-preview:markdown-changed')
 
   getTitle: ->
