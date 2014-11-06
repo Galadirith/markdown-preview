@@ -30,6 +30,7 @@ module.exports =
       'text.plain'
       'text.plain.null-grammar'
     ]
+    renderLaTex: false
     toggleRenderLaTex: false
 
   activate: ->

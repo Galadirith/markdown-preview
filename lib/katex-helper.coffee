@@ -68,4 +68,4 @@ module.exports =
     o.html()
 
   queryRenderLaTex: ->
-    atom.config.get('markdown-preview.toggleRenderLaTex')
+    atom.config.get('markdown-preview.renderLaTex')
