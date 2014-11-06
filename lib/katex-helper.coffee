@@ -17,7 +17,16 @@ module.exports =
     document.getElementsByTagName("head")[0].appendChild(css)
 
     cssDisplay = document.createElement("style")
-    cssDisplay.innerHTML = "div.tex-disp {text-align: center; margin: 1em; font-size: 1.1em}"
+    cssDisplay.innerHTML =  "div.tex-disp {
+                              text-align: center;
+                              margin: 1em;
+                              font-size: 1.1em
+                            }
+
+                            span.tex-err {
+                              border: 1px solid black;
+                              padding: 2px;
+                            }"
     document.getElementsByTagName("head")[0].appendChild(cssDisplay)
     return
 
@@ -34,7 +43,7 @@ module.exports =
       try
         displayString = katex.renderToString("\\displaystyle {"+p1+"}")
       catch err
-        displayString = p1
+        displayString = "Bad KaTeX: <span class=\"tex-err\">\n"+p1+"</span>\n"
       return "\n<div class=\"tex-disp\">\n"+displayString+"</div>"
 
     # Parse inline equations
@@ -68,7 +77,7 @@ module.exports =
         try
           return katex.renderToString(inlineString)
         catch err
-          return inlineString
+          return "Bad KaTeX: <span class=\"tex-err\">"+inlineString+"</span>"
       o(this).html o(this).text()
 
     o.html()
