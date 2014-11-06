@@ -38,7 +38,7 @@ module.exports =
       return text
 
     # Parse displayed equations
-    regex       = /^\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n)/gm
+    regex       = /^(?:\$\$|\\\[)[^\S\n]*\n((?:[^\n]*\n+)*?)^(?:\$\$|\\\])[^\S\n]*(?=\n)/gm
     parsedText  = text.replace regex, (match, p1) ->
       try
         displayString = katex.renderToString("\\displaystyle {"+p1+"}")
