@@ -10,7 +10,10 @@ renderer = require './renderer'
 module.exports =
 class MarkdownPreviewView extends ScrollView
   @content: ->
-    @div class: 'markdown-preview native-key-bindings', tabindex: -1
+    @div class: 'markdown-preview native-key-bindings', tabindex: -1, =>
+      # Add two divs to act as double buffer for the preview view
+      @div class: 'buffer'
+      @div class: 'buffer', style: 'display: none;'
 
   constructor: ({@editorId, @filePath}) ->
     super
@@ -128,9 +131,10 @@ class MarkdownPreviewView extends ScrollView
         @showError(error)
       else
         @loading = false
-        @html(html) # This is the line were the proceesed html is added to the
-                    # page's DOM, == this.html(html) ie $(<select this element>).html(html)
-        @trigger('markdown-preview:markdown-changed')
+        @.find("[style*='display: none']").html(html).ready () =>
+          @.find('div.buffer').toggle()
+        # Disable trigger that signals MathJax to typeset entire preview view
+        #@trigger('markdown-preview:markdown-changed')
 
   getTitle: ->
     if @file?
@@ -167,8 +171,9 @@ class MarkdownPreviewView extends ScrollView
 
   showLoading: ->
     @loading = true
-    @html $$$ ->
-      @div class: 'markdown-spinner', 'Loading Markdown\u2026'
+    # Disable spinner as it overwrites the two child buffer divs
+    #@html $$$ ->
+    #  @div class: 'markdown-spinner', 'Loading Markdown\u2026'
 
   copyToClipboard: ->
     return false if @loading
