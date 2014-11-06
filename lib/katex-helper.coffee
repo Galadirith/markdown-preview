@@ -38,13 +38,13 @@ module.exports =
       return text
 
     # Parse displayed equations
-    regex       = /^[^\S\n]*\n\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n[^\S\n]*$)/gm
+    regex       = /^\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n)/gm
     parsedText  = text.replace regex, (match, p1) ->
       try
         displayString = katex.renderToString("\\displaystyle {"+p1+"}")
       catch err
         displayString = "Bad KaTeX: <span class=\"tex-err\">\n"+p1+"</span>\n"
-      return "\n<div class=\"tex-disp\">\n"+displayString+"</div>"
+      return "\n\n<div class=\"tex-disp\">\n"+displayString+"</div>\n\n"
 
     # Parse inline equations
     regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
