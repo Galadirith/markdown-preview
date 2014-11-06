@@ -106,6 +106,8 @@ class MarkdownPreviewView extends ScrollView
 
     @subscribe atom.config.observe 'markdown-preview.breakOnSingleNewline', callNow: false, changeHandler
 
+    @subscribe atom.config.observe 'markdown-preview.toggleRenderLaTex', callNow: false, changeHandler
+
   renderMarkdown: ->
     @showLoading()
     if @file?

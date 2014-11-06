@@ -25,6 +25,9 @@ module.exports =
     # Replace latex blocks with MathJax script delimited blocks. See
     # docs.mathjax.org/en/latest/model.html for more info on MathJax preprocessor
 
+    if !@queryRenderLaTex()
+      return text
+
     # Parse displayed equations
     regex       = /^[^\S\n]*\n\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n[^\S\n]*$)/gm
     parsedText  = text.replace regex, (match, p1) ->
@@ -42,6 +45,9 @@ module.exports =
     return parsedText
 
   postprocessor: (html) ->
+    if !@queryRenderLaTex()
+      return html
+
     o           = cheerio.load(html)
     regex       = /(?:<code>|<\/code>)/gm
 
@@ -60,3 +66,6 @@ module.exports =
       o(this).html o(this).text()
 
     o.html()
+
+  queryRenderLaTex: ->
+    atom.config.get('markdown-preview.toggleRenderLaTex')

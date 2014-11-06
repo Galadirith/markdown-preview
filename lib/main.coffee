@@ -30,6 +30,7 @@ module.exports =
       'text.plain'
       'text.plain.null-grammar'
     ]
+    toggleRenderLaTex: false
 
   activate: ->
     atom.workspaceView.command 'markdown-preview:toggle', =>
@@ -43,6 +44,9 @@ module.exports =
 
     atom.workspaceView.command 'markdown-preview:toggle-break-on-single-newline', ->
       atom.config.toggle('markdown-preview.breakOnSingleNewline')
+
+    atom.workspaceView.command 'markdown-preview:toggle-render-latex', ->
+      atom.config.toggle('markdown-preview.toggleRenderLaTex')
 
     # Call to add KaTeX css to the page
     require('./katex-helper').addKaTexCSS();
