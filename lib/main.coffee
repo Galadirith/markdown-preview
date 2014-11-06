@@ -44,6 +44,9 @@ module.exports =
     atom.workspaceView.command 'markdown-preview:toggle-break-on-single-newline', ->
       atom.config.toggle('markdown-preview.breakOnSingleNewline')
 
+    # Call to add KaTeX css to the page
+    require('./katex-helper').addKaTexCSS();
+
     atom.workspace.registerOpener (uriToOpen) ->
       try
         {protocol, host, pathname} = url.parse(uriToOpen)

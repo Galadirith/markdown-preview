@@ -5,6 +5,7 @@ Highlights = require 'highlights'
 {$} = require 'atom'
 roaster = null # Defer until used
 {scopeForFenceName} = require './extension-helper'
+katex = require './katex-helper'
 
 highlighter = null
 {resourcePath} = atom.getLoadSettings()
@@ -20,6 +21,9 @@ exports.toHtml = (text='', filePath, grammar, callback) ->
   # https://github.com/chjj/marked/issues/354
   text = text.replace(/^\s*<!doctype(\s+.*)?>\s*/i, '')
 
+  # Parse test for latex equations
+  text = katex.preprocessor(text)
+
   roaster text, options, (error, html) =>
     return callback(error) if error
 
@@ -27,6 +31,7 @@ exports.toHtml = (text='', filePath, grammar, callback) ->
     # Default code blocks to be coffee in Literate CoffeeScript files
     defaultCodeLanguage = 'coffee' if grammar.scopeName is 'source.litcoffee'
 
+    html = katex.postprocessor(html)
     html = sanitize(html)
     html = resolveImagePaths(html, filePath)
     html = tokenizeCodeBlocks(html, defaultCodeLanguage)

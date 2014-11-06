@@ -16,6 +16,7 @@
     "temp": "0.6.x",
     "underscore-plus": "1.x",
     "wrench": "1.5.x",
-    "highlights": "0.13.0"
+    "highlights": "0.13.0",
+    "katex": "Khan/KaTex"
   }
 }
