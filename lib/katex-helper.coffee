@@ -31,7 +31,10 @@ module.exports =
     # Parse displayed equations
     regex       = /^[^\S\n]*\n\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n[^\S\n]*$)/gm
     parsedText  = text.replace regex, (match, p1) ->
-      displayString = katex.renderToString("\\displaystyle {"+p1+"}")
+      try
+        displayString = katex.renderToString("\\displaystyle {"+p1+"}")
+      catch err
+        displayString = p1
       return "\n<div class=\"tex-disp\">\n"+displayString+"</div>"
 
     # Parse inline equations
@@ -62,7 +65,10 @@ module.exports =
             when '<code>'   then ''
             when '</code>'  then ''
             else ''
-        katex.renderToString(inlineString)
+        try
+          return katex.renderToString(inlineString)
+        catch err
+          return inlineString
       o(this).html o(this).text()
 
     o.html()
