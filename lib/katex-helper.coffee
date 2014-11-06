@@ -43,7 +43,7 @@ module.exports =
       try
         displayString = katex.renderToString("\\displaystyle {"+p1+"}")
       catch err
-        displayString = "Bad KaTeX: <span class=\"tex-err\">\n"+p1+"</span>\n"
+        displayString = "<span class=\"tex-err\">\n"+p1+"</span>\n"
       return "\n\n<div class=\"tex-disp\">\n"+displayString+"</div>\n\n"
 
     # Parse inline equations
@@ -77,7 +77,7 @@ module.exports =
         try
           return katex.renderToString(inlineString)
         catch err
-          return "Bad KaTeX: <span class=\"tex-err\">"+inlineString+"</span>"
+          return "<span class=\"tex-err\">"+inlineString+"</span>"
       o(this).html o(this).text()
 
     o.html()
