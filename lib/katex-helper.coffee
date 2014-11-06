@@ -47,7 +47,7 @@ module.exports =
       return "\n\n<div class=\"tex-disp\">\n"+displayString+"</div>\n\n"
 
     # Parse inline equations
-    regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
+    regex = /(?:([^\\\$])\$(?!\$)|^\$(?!\$))([\s\S]*?)([^\\])\$/gm
     parsedText = parsedText.replace( regex, "$1<span class=\"tex-in\">`$2$3`</span>")
 
     # Parse escaped $
