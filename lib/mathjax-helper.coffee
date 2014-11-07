@@ -28,8 +28,8 @@ module.exports =
       return text
 
     # Parse displayed equations
-    regex       = /^[^\S\n]*\n\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n[^\S\n]*$)/gm
-    parsedText  = text.replace(regex, "\n<script type=\"math/tex; mode=display\">\n$1</script>")
+    regex       = /^\$\$[^\S\n]*\n((?:[^\n]*\n+)*?)^\$\$[^\S\n]*(?=\n)/gm
+    parsedText  = text.replace(regex, "\n\n<script type=\"math/tex; mode=display\">\n$1</script>\n\n")
 
     # Parse inline equations
     regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
