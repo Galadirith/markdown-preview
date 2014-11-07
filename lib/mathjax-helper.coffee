@@ -33,7 +33,7 @@ module.exports =
     parsedText  = text.replace(regex, "\n\n<script type=\"math/tex; mode=display\">\n$1</script>\n\n")
 
     # Parse inline equations
-    regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
+    regex = /(?:([^\\\$])\$(?!\$)|^\$(?!\$))([\s\S]*?)([^\\])\$/gm
     parsedText = parsedText.replace( regex, "$1<script type=\"math/tex\">`$2$3`</script>")
 
     # Parse escaped $
