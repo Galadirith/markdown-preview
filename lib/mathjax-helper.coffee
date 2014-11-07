@@ -47,7 +47,7 @@ module.exports =
       return # adding this return makes it work, why?
 
     o = cheerio.load(html.html())
-    regex = /(?:<code>|<\/code>)/gm
+    regex = /(?:<code>|<\/code>|^`|`$)/gm
     o("script[type='math/tex']").contents().replaceWith () ->
       # The .text decodes the HTML entities for &,<,> as in code blocks the
       # are automatically converted into HTML entities
