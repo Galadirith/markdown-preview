@@ -116,7 +116,8 @@ class MarkdownPreviewView extends ScrollView
 
   renderMarkdown: ->
     atom.config.set('markdown-preview.renderLaTex', @renderLaTex)
-    @showLoading()
+    if !@renderLaTex
+      @showLoading()
     if @file?
       @file.read().then (contents) => @renderMarkdownText(contents)
     else if @editor?

@@ -11,10 +11,9 @@ cheerio = require 'cheerio'
 module.exports =
   loadMathJax: ->
     # Load MathJax
-    script        = document.createElement("script")
+    script = document.createElement("script")
     script.addEventListener "load", () ->
       configureMathJax()
-      enableMathjaxPreview()
     script.type   = "text/javascript";
     script.src    = process.env['HOME']+"/.atom/MathJax/MathJax.js?delayStartupUntil=configured"
     document.getElementsByTagName("head")[0].appendChild(script)
@@ -42,11 +41,12 @@ module.exports =
 
     return parsedText
 
-  postprocessor: (html) ->
+  postprocessor: (html, callback) ->
     if !@queryRenderLaTex()
-      return html
+      callback(null, html.html().trim())
+      return # adding this return makes it work, why?
 
-    o = cheerio.load(html)
+    o = cheerio.load(html.html())
     regex = /(?:<code>|<\/code>)/gm
     o("script[type='math/tex']").contents().replaceWith () ->
       # The .text decodes the HTML entities for &,<,> as in code blocks the
@@ -56,7 +56,16 @@ module.exports =
           when '<code>'   then ''
           when '</code>'  then ''
           else ''
-    o.html()
+
+    previewHTML           = document.createElement("div")
+    previewHTML.innerHTML = o.html()
+
+    renderPreview = () ->
+      callback(null, previewHTML.innerHTML)
+      return
+    MathJax.Hub.Queue ["Typeset", MathJax.Hub, previewHTML, renderPreview]
+
+    return
 
   queryRenderLaTex: ->
     atom.config.get('markdown-preview.renderLaTex')
@@ -72,22 +81,4 @@ configureMathJax = ->
     messageStyle: "none"
     showMathMenu: false
   MathJax.Hub.Configured()
-  return
-
-enableMathjaxPreview = ->
-  # Process existing markdown-preview pane items and add markdown-changed callback
-  panes = atom.workspace.getPaneItems();
-  for pane in panes
-    do (pane) ->
-      if( pane.constructor.name == "MarkdownPreviewView" )
-        MathJax.Hub.Queue ["Typeset", MathJax.Hub, pane[0]]
-        pane.on 'markdown-preview:markdown-changed', () ->
-          MathJax.Hub.Queue ["Typeset", MathJax.Hub, pane[0]]
-
-  # Watch for new markdown-preview pane items, process and add markdown-changed callback
-  atom.workspace.onDidAddPaneItem (event) ->
-    MathJax.Hub.Queue ["Typeset", MathJax.Hub, event.item[0]]
-    event.item.on 'markdown-preview:markdown-changed', () ->
-      MathJax.Hub.Queue ["Typeset", MathJax.Hub, event.item[0]]
-
   return

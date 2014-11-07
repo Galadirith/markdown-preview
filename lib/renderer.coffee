@@ -29,12 +29,10 @@ exports.toHtml = (text='', filePath, grammar, callback) ->
     # Default code blocks to be coffee in Literate CoffeeScript files
     defaultCodeLanguage = 'coffee' if grammar.scopeName is 'source.litcoffee'
 
-    html = mathjaxHelper.postprocessor(html)
     html = sanitize(html)
     html = resolveImagePaths(html, filePath)
     html = tokenizeCodeBlocks(html, defaultCodeLanguage)
-    # I get error if I place mathjaxHelper.post here ???
-    callback(null, html.html().trim())
+    mathjaxHelper.postprocessor(html, callback)
 
 exports.toText = (text, filePath, grammar, callback) ->
   exports.toHtml text, filePath, grammar, (error, html) ->
