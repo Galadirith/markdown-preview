@@ -37,7 +37,7 @@ module.exports =
 
     # Parse inline equations
     regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
-    parsedText = parsedText.replace( regex, "$1<script type=\"math/tex\">`$2$3`</script>")
+    parsedText = parsedText.replace( regex, "$1<span><script type=\"math/tex\">`$2$3`</script></span>")
 
     # Parse escaped $
     regex = /[\\]\$/gm
@@ -51,7 +51,7 @@ module.exports =
       return # adding this return makes it work, why?
 
     o = cheerio.load(html.html())
-    regex = /(?:<code>|<\/code>|^`|`$)/gm
+    regex = /(?:<code>|<\/code>)/gm
     o("script[type='math/tex']").contents().replaceWith () ->
       # The .text decodes the HTML entities for &,<,> as in code blocks the
       # are automatically converted into HTML entities
