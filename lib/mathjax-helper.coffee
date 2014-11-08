@@ -26,13 +26,17 @@ module.exports =
     if !@queryRenderLaTex()
       return text
 
-    # Parse displayed equations
+    # Begining of file cannot begin with $, prepend with ' ' if is so
+    if text.charAt(0) is '$'
+      text = [' ', text].join('')
 
+
+    # Parse displayed equations
     regex       = /^(?:\$\$|\\\[)[^\S\n]*\n((?:[^\n]*\n+)*?)^(?:\$\$|\\\])[^\S\n]*(?=\n)/gm
     parsedText  = text.replace(regex, "\n\n<script type=\"math/tex; mode=display\">\n$1</script>\n\n")
 
     # Parse inline equations
-    regex = /(?:([^\\\$])\$(?!\$)|^\$(?!\$))([\s\S]*?)([^\\])\$/gm
+    regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
     parsedText = parsedText.replace( regex, "$1<script type=\"math/tex\">`$2$3`</script>")
 
     # Parse escaped $
