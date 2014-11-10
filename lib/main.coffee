@@ -30,7 +30,6 @@ module.exports =
       'text.plain'
       'text.plain.null-grammar'
     ]
-    renderLaTex: false
 
   activate: ->
     atom.workspaceView.command 'markdown-preview:toggle', =>

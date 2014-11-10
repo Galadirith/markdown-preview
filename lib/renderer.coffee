@@ -11,7 +11,7 @@ highlighter = null
 {resourcePath} = atom.getLoadSettings()
 packagePath = path.dirname(__dirname)
 
-exports.toHtml = (text='', filePath, grammar, callback) ->
+exports.toHtml = (text='', filePath, grammar, renderLaTeX, callback) ->
   roaster ?= require 'roaster'
   options =
     sanitize: false
@@ -22,7 +22,8 @@ exports.toHtml = (text='', filePath, grammar, callback) ->
   text = text.replace(/^\s*<!doctype(\s+.*)?>\s*/i, '')
 
   # Parse test for latex equations
-  text = mathjaxHelper.preprocessor(text)
+  if renderLaTeX
+    text = mathjaxHelper.preprocessor(text)
 
   roaster text, options, (error, html) =>
     return callback(error) if error
@@ -34,10 +35,13 @@ exports.toHtml = (text='', filePath, grammar, callback) ->
     html = sanitize(html)
     html = resolveImagePaths(html, filePath)
     html = tokenizeCodeBlocks(html, defaultCodeLanguage)
-    mathjaxHelper.postprocessor(html, callback)
+    if renderLaTeX
+      mathjaxHelper.postprocessor(html, callback)
+    else
+      callback(null, html.html().trim())
 
 exports.toText = (text, filePath, grammar, callback) ->
-  exports.toHtml text, filePath, grammar, (error, html) ->
+  exports.toHtml text, filePath, grammar, false, (error, html) ->
     if error
       callback(error)
     else

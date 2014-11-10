@@ -23,13 +23,9 @@ module.exports =
     # Replace latex blocks with MathJax script delimited blocks. See
     # docs.mathjax.org/en/latest/model.html for more info on MathJax preprocessor
 
-    if !@queryRenderLaTex()
-      return text
-
     # Begining of file cannot begin with $, prepend with ' ' if is so
     if text.charAt(0) is '$'
       text = [' ', text].join('')
-
 
     # Parse displayed equations
     regex       = /^(?:\$\$|\\\[)[^\S\n]*\n((?:[^\n]*\n+)*?)^(?:\$\$|\\\])[^\S\n]*(?=\n)/gm
@@ -46,10 +42,6 @@ module.exports =
     return parsedText
 
   postprocessor: (html, callback) ->
-    if !@queryRenderLaTex()
-      callback(null, html.html().trim())
-      return # adding this return makes it work, why?
-
     o = cheerio.load(html.html())
     regex = /(?:<code>|<\/code>)/gm
     o("script[type='math/tex']").contents().replaceWith () ->
@@ -70,9 +62,6 @@ module.exports =
     MathJax.Hub.Queue ["Typeset", MathJax.Hub, previewHTML, renderPreview]
 
     return
-
-  queryRenderLaTex: ->
-    atom.config.get('markdown-preview.renderLaTex')
 
 configureMathJax = ->
   MathJax.Hub.Config
