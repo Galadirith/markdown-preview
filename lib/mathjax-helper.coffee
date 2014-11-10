@@ -28,12 +28,24 @@ module.exports =
       text = [' ', text].join('')
 
     # Parse displayed equations
+    # For the use case performance boost we HAVE to limit delimiters to \[...\]
+    # becasue this gives a unique opening and closing delimiter. With $$ as
+    # delimiters, then if we start to insert a new disp eq, '$$' then before we
+    # add the closing delimiters the parser will match these too any following
+    # $$ which will be opening delimiters to a following disp eq block. The
+    # result is a cascade of changed disp equations, and this overloads the
+    # postprocessor with many MathJax.Hub.Queue calls, which actually ends up
+    # giving a perfromance hit rather than boost!
+    #
+    # The alternative is to restrict the number of MathJax.Hub.Queue calls to
+    # one, and if we go over that then simply typeset the page.... actually Ill
+    # try that first :D
     regex       = /^(?:\$\$|\\\[)[^\S\n]*\n((?:[^\n]*\n+)*?)^(?:\$\$|\\\])[^\S\n]*(?=\n)/gm
-    parsedText  = text.replace(regex, "\n\n<script type=\"math/tex; mode=display\">\n$1</script>\n\n")
+    parsedText  = text.replace(regex, "\n\n<script type=\"math/tex; mode=display\" class=\"math-tex\">\n$1</script>\n\n")
 
     # Parse inline equations
-    regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
-    parsedText = parsedText.replace( regex, "$1<span><script type=\"math/tex\">`$2$3`</script></span>")
+    regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])(?:\$|$)/gm
+    parsedText = parsedText.replace( regex, "$1<span><script type=\"math/tex\" class=\"math-tex\">`$2$3`</script></span>")
 
     # Parse escaped $
     regex = /[\\]\$/gm
@@ -41,8 +53,10 @@ module.exports =
 
     return parsedText
 
-  postprocessor: (html, callback) ->
+  postprocessor: (html, oldHtml, callback) ->
     o = cheerio.load(html.html())
+
+    # Filter out code tags in inline equations
     regex = /(?:<code>|<\/code>)/gm
     o("script[type='math/tex']").contents().replaceWith () ->
       # The .text decodes the HTML entities for &,<,> as in code blocks the
@@ -53,13 +67,49 @@ module.exports =
           when '</code>'  then ''
           else ''
 
+    # Find the LaTeX in the old html
+    oldHTML       = cheerio.load("<div>#{oldHtml}</div>")
+    oldEquations  = oldHTML("script[class='math-tex']")
+    newEquations  = o("script[class='math-tex']")
+
+    # Load the new html into a DOM object
     previewHTML           = document.createElement("div")
     previewHTML.innerHTML = o.html()
+    equations             = previewHTML.getElementsByClassName("math-tex")
+
+    # Check if the number of equations has changed
+    if newEquations.length is oldEquations.length
+      modEquations = []
+
+      # Check if the LaTeX of each equation has changed
+      for i in [0..(newEquations.length-1)]
+        if newEquations.eq(i).html() is oldEquations.eq(i).html()
+          newEquations.eq(i).before( cheerio.html(oldEquations.eq(i).prev()) )
+        else
+          if modEquations.length is 0
+            console.log(i)
+            modEquations.push(i)
+          else
+            break
+
+      if modEquations.length > 1
+        MathJax.Hub.Queue ["Typeset", MathJax.Hub, previewHTML]
+      else
+        # Update the DOM object with the processed html and typeset remaining eq
+        previewHTML.innerHTML = o.html()
+        for i in modEquations
+          MathJax.Hub.Queue ["Typeset", MathJax.Hub, equations.item(i)]
+
+    # If no of equations has changed simply queue the entire DOM for typesetting
+    # manually queuing each equation causes performance to take a massive hit
+    else
+      console.log("not equal")
+      MathJax.Hub.Queue ["Typeset", MathJax.Hub, previewHTML]
 
     renderPreview = () ->
       callback(null, previewHTML.innerHTML)
       return
-    MathJax.Hub.Queue ["Typeset", MathJax.Hub, previewHTML], [renderPreview]
+    MathJax.Hub.Queue [renderPreview]
 
     return
 

@@ -123,7 +123,7 @@ class MarkdownPreviewView extends ScrollView
       @renderMarkdownText(@editor.getText())
 
   renderMarkdownText: (text) ->
-    renderer.toHtml text, @getPath(), @getGrammar(), @renderLaTeX, (error, html) =>
+    renderer.toHtml text, @html(), @getPath(), @getGrammar(), @renderLaTeX, (error, html) =>
       if error
         @showError(error)
       else

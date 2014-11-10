@@ -11,7 +11,7 @@ highlighter = null
 {resourcePath} = atom.getLoadSettings()
 packagePath = path.dirname(__dirname)
 
-exports.toHtml = (text='', filePath, grammar, renderLaTeX, callback) ->
+exports.toHtml = (text='', oldHtml, filePath, grammar, renderLaTeX, callback) ->
   roaster ?= require 'roaster'
   options =
     sanitize: false
@@ -36,7 +36,7 @@ exports.toHtml = (text='', filePath, grammar, renderLaTeX, callback) ->
     html = resolveImagePaths(html, filePath)
     html = tokenizeCodeBlocks(html, defaultCodeLanguage)
     if renderLaTeX
-      mathjaxHelper.postprocessor(html, callback)
+      mathjaxHelper.postprocessor(html, oldHtml, callback)
     else
       callback(null, html.html().trim())
 
