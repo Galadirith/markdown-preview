@@ -59,7 +59,7 @@ module.exports =
     renderPreview = () ->
       callback(null, previewHTML.innerHTML)
       return
-    MathJax.Hub.Queue ["Typeset", MathJax.Hub, previewHTML, renderPreview]
+    MathJax.Hub.Queue ["Typeset", MathJax.Hub, previewHTML], [renderPreview]
 
     return
 
