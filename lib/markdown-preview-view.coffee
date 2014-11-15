@@ -136,7 +136,7 @@ class MarkdownPreviewView extends ScrollView
         # the constructor st no div.update-preview is avilable at construction
         if !@updatePreview
           @updatePreview = new UpdatePreview(@find("div.update-preview")[0])
-        @updatePreview.update(html)
+        @updatePreview.update(html, @renderLaTeX)
         @trigger('markdown-preview:markdown-changed')
 
   getTitle: ->

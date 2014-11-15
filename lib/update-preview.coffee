@@ -23,6 +23,7 @@
 "use strict"
 
 WrappedDomTree = require './wrapped-dom-tree'
+MathJaxHelper  = require './mathjax-helper'
 
 module.exports = class UpdatePreview
   # @param dom A DOM element object
@@ -31,7 +32,7 @@ module.exports = class UpdatePreview
     @tree     = new WrappedDomTree dom, true
     @htmlStr  = ""
 
-  update: (htmlStr) ->
+  update: (htmlStr, renderLaTeX) ->
     if htmlStr is @htmlStr
       return
 
@@ -49,4 +50,14 @@ module.exports = class UpdatePreview
     if firstTime
       r.possibleReplace = null
       r.last            = null
+
+    if renderLaTeX
+      r.inserted = r.inserted.map (elm) ->
+        while elm and !elm.innerHTML
+          elm = elm.parentElement
+          elm
+      r.inserted = r.inserted.filter (elm) ->
+        !!elm
+      MathJaxHelper.mathProcessor r.inserted
+
     r
