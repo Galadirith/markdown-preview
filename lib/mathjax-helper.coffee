@@ -9,8 +9,10 @@
 cheerio = require 'cheerio'
 
 module.exports =
+  #
+  # Load MathJax environment
+  #
   loadMathJax: ->
-    # Load MathJax
     script = document.createElement("script")
     script.addEventListener "load", () ->
       configureMathJax()
@@ -19,21 +21,24 @@ module.exports =
     document.getElementsByTagName("head")[0].appendChild(script)
     return
 
+  #
+  # Prepare LaTeX equations to be passed through the markdown parser and
+  # protect from being processed for markdown.
+  #
+  # @param text String of source markdown containing LaTeX equations.
+  #
   preprocessor: (text) ->
-    # Replace latex blocks with MathJax script delimited blocks. See
-    # docs.mathjax.org/en/latest/model.html for more info on MathJax preprocessor
-
     # Begining of file cannot begin with $, prepend with ' ' if is so
     if text.charAt(0) is '$'
       text = [' ', text].join('')
 
     # Parse displayed equations
     regex       = /^(?:\$\$|\\\[)[^\S\n]*\n((?:[^\n]*\n+)*?)^(?:\$\$|\\\])[^\S\n]*(?=\n)/gm
-    parsedText  = text.replace(regex, "\n\n<script type=\"math/tex; mode=display\">\n$1</script>\n\n")
+    parsedText  = text.replace(regex, "\n\n<span class=\"math\">`\\[$1\\]`</span>\n\n")
 
     # Parse inline equations
     regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
-    parsedText = parsedText.replace( regex, "$1<span><script type=\"math/tex\">`$2$3`</script></span>")
+    parsedText = parsedText.replace( regex, "$1<span class=\"math\">`\\($2$3\\)`</span>")
 
     # Parse escaped $
     regex = /[\\]\$/gm
@@ -41,10 +46,18 @@ module.exports =
 
     return parsedText
 
+  #
+  # Remove <code> tags added to protect LaTeX equations from processing when
+  # they were passed through the markdown parser
+  #
+  # @param html String of parsed markdown containing LaTeX equations.
+  # @param callback Callback taking arguments (error, html) where html is a
+  #   string representation of the parsed markdown.
+  #
   postprocessor: (html, callback) ->
     o = cheerio.load(html.html())
     regex = /(?:<code>|<\/code>)/gm
-    o("script[type='math/tex']").contents().replaceWith () ->
+    o("span[class='math']").contents().replaceWith () ->
       # The .text decodes the HTML entities for &,<,> as in code blocks the
       # are automatically converted into HTML entities
       o(this).text().replace regex, (match) ->
@@ -53,22 +66,28 @@ module.exports =
           when '</code>'  then ''
           else ''
 
-    previewHTML           = document.createElement("div")
-    previewHTML.innerHTML = o.html()
-
-    renderPreview = () ->
-      callback(null, previewHTML.innerHTML)
-      return
-    MathJax.Hub.Queue ["Typeset", MathJax.Hub, previewHTML], [renderPreview]
-
+    callback(null, o.html())
     return
 
+  #
+  # Process DOM elements for LaTeX equations with MathJax
+  #
+  # @param domElements An array of DOM elements to be processed by MathJax. See
+  #   [element](https://developer.mozilla.org/en-US/docs/Web/API/element) for
+  #   details on DOM elements.
+  mathProcessor: (domElements) ->
+    if MathJax
+      MathJax.Hub.Queue ["Typeset", MathJax.Hub, domElements]
+    return
+
+#
+# Configure MathJax environment. Similar to the TeX-AMS_HTML configuration with
+# a few unnessesary features stripped away
+#
 configureMathJax = ->
   MathJax.Hub.Config
-    # Similar to TeX-AMS_HTML without any extension. This kills the MathJax
-    # preprocessor and the MathMenu and MathZoom features
     jax: ["input/TeX","output/HTML-CSS"]
-    extensions: []
+    extensions: ["tex2jax.js"]
     TeX:
       extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
     messageStyle: "none"
