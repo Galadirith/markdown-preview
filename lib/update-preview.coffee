@@ -22,15 +22,21 @@
 # THE SOFTWARE.
 "use strict"
 
+{$}   = require 'atom'
+fs    = require 'fs'
+url   = require 'url'
+path  = require 'path'
+
 WrappedDomTree = require './wrapped-dom-tree'
 MathJaxHelper  = require './mathjax-helper'
 
 module.exports = class UpdatePreview
   # @param dom A DOM element object
   #    https://developer.mozilla.org/en-US/docs/Web/API/element
-  constructor: (dom) ->
+  constructor: (dom, filePath) ->
     @tree     = new WrappedDomTree dom, true
     @htmlStr  = ""
+    @filePath = filePath
 
   update: (htmlStr, renderLaTeX) ->
     if htmlStr is @htmlStr
@@ -47,9 +53,35 @@ module.exports = class UpdatePreview
     r = @tree.diffTo newTree
     newTree.removeSelf()
 
+    #
+    # Add event listener to open links in markdown previews to local files with
+    # relative file paths in atom
+    #
+    # @param aDOM A DOM element, in priniciple this can be any DOM element
+    #   but it needs to have a "href" attribute, so typically should only be
+    #   used for <a> tags
+    #
+    addLocalLinkListener = (aDOM) =>
+      dirName   = path.dirname @filePath
+      fileName  = $(aDOM).attr("href")
+      filePath  = path.join dirName, fileName
+      fs.exists filePath, (exists) ->
+        if exists
+          $(aDOM).click () ->
+            atom.workspaceView.open filePath,
+              split: 'left'
+      return
+
     if firstTime
       r.possibleReplace = null
       r.last            = null
+      $(@tree.shownTree.dom).find("a").each (i, elm) ->
+        addLocalLinkListener elm
+        return
+
+    for elm in r.inserted
+      if elm.tagName is "A"
+        addLocalLinkListener elm
 
     if renderLaTeX
       r.inserted = r.inserted.map (elm) ->
@@ -60,4 +92,4 @@ module.exports = class UpdatePreview
         !!elm
       MathJaxHelper.mathProcessor r.inserted
 
-    r
+    return r
