@@ -282,7 +282,7 @@ module.exports = class WrappedDomTree
     otherTree.isText or
     @tagName isnt otherTree.tagName or
     @className isnt otherTree.className or
-    @class is "math" or
+    @className is "math" or
     @tagName is "A" or
     (@tagName is "IMG" and !@dom.isEqualNode(otherTree.dom))
 
