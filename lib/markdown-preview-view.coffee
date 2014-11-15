@@ -6,13 +6,17 @@ fs = require 'fs-plus'
 {File} = require 'pathwatcher'
 
 renderer = require './renderer'
+UpdatePreview = require './update-preview'
 
 module.exports =
 class MarkdownPreviewView extends ScrollView
   @content: ->
-    @div class: 'markdown-preview native-key-bindings', tabindex: -1
+    @div class: 'markdown-preview native-key-bindings', tabindex: -1, =>
+      # If you dont explicitly declare a class then the elements wont be created
+      @div class: 'update-preview'
 
   constructor: ({@editorId, @filePath}) ->
+    @updatePreview = null
     super
 
   afterAttach: ->
@@ -117,8 +121,6 @@ class MarkdownPreviewView extends ScrollView
   renderLaTeX: false
 
   renderMarkdown: ->
-    if !@renderLaTeX
-      @showLoading()
     if @file?
       @file.read().then (contents) => @renderMarkdownText(contents)
     else if @editor?
@@ -130,7 +132,11 @@ class MarkdownPreviewView extends ScrollView
         @showError(error)
       else
         @loading = false
-        @html(html)
+        # The DOM structure of the preview seems to not be created untill after
+        # the constructor st no div.update-preview is avilable at construction
+        if !@updatePreview
+          @updatePreview = new UpdatePreview(@find("div.update-preview")[0])
+        @updatePreview.update(html)
         @trigger('markdown-preview:markdown-changed')
 
   getTitle: ->
