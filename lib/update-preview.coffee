@@ -55,7 +55,7 @@ module.exports = class UpdatePreview
       r.inserted = r.inserted.map (elm) ->
         while elm and !elm.innerHTML
           elm = elm.parentElement
-          elm
+        elm
       r.inserted = r.inserted.filter (elm) ->
         !!elm
       MathJaxHelper.mathProcessor r.inserted
