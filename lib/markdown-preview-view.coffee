@@ -127,7 +127,7 @@ class MarkdownPreviewView extends ScrollView
         # The DOM structure of the preview seems to not be created untill after
         # the constructor st no div.update-preview is avilable at construction
         if !@updatePreview
-          @updatePreview = new UpdatePreview(@find("div.update-preview")[0])
+          @updatePreview = new UpdatePreview(@find("div.update-preview")[0], @getPath())
         @updatePreview.update(html)
         @trigger('markdown-preview:markdown-changed')
 
