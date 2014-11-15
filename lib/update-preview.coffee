@@ -75,7 +75,7 @@ module.exports = class UpdatePreview
       r.possibleReplace = null
       r.last            = null
       $(@tree.shownTree.dom).find("a").each (i, elm) ->
-        addLocalMDLinkListener elm
+        addLocalLinkListener elm
         return
 
     for elm in r.inserted
