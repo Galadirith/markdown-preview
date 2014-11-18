@@ -28,9 +28,13 @@ module.exports =
   # @param text String of source markdown containing LaTeX equations.
   #
   preprocessor: (text) ->
-    # Begining of file cannot begin with $, prepend with ' ' if is so
+    # Begining of file cannot begin with $, prepend with '\n' if is so
     if text.charAt(0) is '$'
-      text = [' ', text].join('')
+      text = ['\n', text].join('')
+
+    # End of file cannot end with $, postfix with '\n' if is so
+    if text.charAt(text.length-1) is '$'
+      text = [text, '\n'].join('')
 
     # Parse displayed equations
     regex       = /^(?:\$\$|\\\[)[^\S\n]*\n((?:[^\n]*\n+)*?)^(?:\$\$|\\\])[^\S\n]*(?=\n)/gm
