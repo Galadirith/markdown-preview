@@ -64,11 +64,12 @@ literally display a dollar sign you can use `\$`.
     $ git clone https://github.com/Galadirith/markdown-preview.git
     ````
 
-2.  Checkout the mathjax branch (you should still be in the same directory ;D):
+2.  Checkout the `mathjax-markmon` branch (you should still be in the same
+    directory ;D):
 
     ````bash
     $ cd markdown-preview
-    $ git checkout mathjax
+    $ git checkout mathjax-markmon
     ````
 
 2.  Install the dependencies for the package with atom's package manager:
