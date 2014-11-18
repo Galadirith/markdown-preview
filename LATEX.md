@@ -78,8 +78,82 @@ literally display a dollar sign you can use `\$`.
     $ apm install
     ````
 
-3.  Link this package to your atom dev environment (it is advised not to link to
-    your main atom environment, but if you would like to then drop the --dev):
+3.  Link this package to atom:
+
+    ````bash
+    $ apm link
+    ````
+
+4.  Clone [MathJax](https://github.com/mathjax/mathjax) into your `~/.atom`
+    directory:
+
+    ````bash
+    $ cd ~/.atom
+    $ git clone https://github.com/mathjax/MathJax.git
+    ````
+
+5.  Open atom an enjoy LaTeX enabled markdown ;D
+
+## Uninstallation
+
+1.  Navigate to the folder
+    [galadirith/markdown-preview](https://github.com/Galadirith/markdown-preview)
+    was cloned into in step (2) of the installation, for example if I clond it
+    into the downloads folder of my home directory I would do the following:
+
+    ````bash
+    $ cd ~/downloads/markdown-preview
+    ````
+
+2.  Unlink this package from atom:
+
+    ````bash
+    $ apm unlink
+    ````
+
+3.  Delete the `markdown-preview` folder. You can do this using a gui file
+    explorer or a cli as follows:
+
+    ````bash
+    $ cd ..
+    $ rm -rf markdown-preview/
+    ````
+
+4.  Delete `MathJax` from your `~/.atom` directory ():
+
+    ````bash
+    $ cd ~/.atom
+    $ rm -rf MathJax/
+    ````
+
+All traces of [galadirith/markdown-preview](https://github.com/Galadirith/markdown-preview)
+are now removed from you system.
+
+
+## Developer Installation
+
+1.  Clone [galadirith/markdown-preview](https://github.com/Galadirith/markdown-preview)
+    to your local computer (the location doesn't matter):
+
+    ````bash
+    $ git clone https://github.com/Galadirith/markdown-preview.git
+    ````
+
+2.  Checkout the `mathjax-markmon` branch (you should still be in the same
+    directory ;D):
+
+    ````bash
+    $ cd markdown-preview
+    $ git checkout mathjax-markmon
+    ````
+
+2.  Install the dependencies for the package with atom's package manager:
+
+    ````bash
+    $ apm install
+    ````
+
+3.  Link this package to your atom dev environment:
 
     ````bash
     $ apm link --dev
