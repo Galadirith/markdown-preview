@@ -38,11 +38,11 @@ module.exports =
 
     # Parse displayed equations
     regex       = /^(?:\$\$|\\\[)[^\S\n]*\n((?:[^\n]*\n+)*?)^(?:\$\$|\\\])[^\S\n]*(?=\n)/gm
-    parsedText  = text.replace(regex, "\n\n<span class=\"math\">`\\[$1\\]`</span>\n\n")
+    parsedText  = text.replace(regex, "\n\n<span class=\"math\">`<script type=\"math/tex; mode=display\">$1</script>`</span>\n\n")
 
     # Parse inline equations
     regex = /([^\\\$])\$(?!\$)([\s\S]*?)([^\\])\$/gm
-    parsedText = parsedText.replace( regex, "$1<span class=\"math\">`\\($2$3\\)`</span>")
+    parsedText = parsedText.replace( regex, "$1<span class=\"math\">`<script type=\"math/tex\">$2$3</script>`</span>")
 
     # Parse escaped $
     regex = /[\\]\$/gm
@@ -91,7 +91,7 @@ module.exports =
 configureMathJax = ->
   MathJax.Hub.Config
     jax: ["input/TeX","output/HTML-CSS"]
-    extensions: ["tex2jax.js"]
+    extensions: []
     TeX:
       extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
     messageStyle: "none"
